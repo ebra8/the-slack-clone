@@ -1,35 +1,48 @@
-<div class="md:w-2/3 w-full">
-  <% if notice.present? %>
-    <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-md inline-block" id="notice"><%= notice %></p>
+<div class="w-full">
+  <div class="md:w-2/3 w-full">
+    <% if notice.present? %>
+      <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-md inline-block" id="notice"><%= notice %></p>
+    <% end %>
+
+    <h1 class="font-bold text-4xl inline-block"><%= @channel.name %></h1>
+
+    <%= link_to "Back", channels_path, class: "w-full sm:w-auto text-center mt-2 sm:mt-0 sm:ml-2 rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
+    <%= link_to "Edit", edit_channel_path(@channel), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
+    <%= button_to "Delete", @channel, method: :delete, form_class: "sm:inline-block mt-2 sm:mt-0 sm:ml-2", class: "w-full rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer", data: { turbo_confirm: "Are you sure?" } %>
+  </div>
+
+  <div class="bg-gray-800 shadow rounded-lg px-5 py-3 my-4 mt-8">
+    <div id="chat" class="space-y-4 max-h-96 my-4 overflow-y-auto">
+      <div id="messages">
+        <%= turbo_stream_from @channel, "messages" %>
+        <%= render @channel.messages %>
+      </div>
+    </div>
+
+    <script>
+      new MutationObserver(() => chat.scrollTop = chat.scrollHeight)
+        .observe(chat, {childList: true, subtree: true});
+      chat.scrollTop = chat.scrollHeight;
+    </script>
+</div>
+
+  <%= form_with model: [@channel, Message.new], class: "mt-4", data: { controller: "reset-form", action: "turbo:submit-end->reset-form#reset" } do |f| %>
+    <div class="flex gap-4">
+      <%= f.text_area :content,
+          class: "flex-1 min-h-[80px] rounded-lg border-gray-600 bg-gray-700 text-gray-100 shadow-sm focus:border-indigo-400 focus:ring-indigo-400",
+          placeholder: "Type your message..."
+        %>
+
+      <%= f.submit "Send",
+        class: "rounded-lg py-3 px-5 bg-blue-700 text-white inline-block font-medium cursor-pointer hover:bg-blue-600"
+      %>
+    </div>
   <% end %>
 
-  <h1 class="font-bold text-4xl"><%= @channel.name %></h1>
-
-  <%= render @channel %>
-
-  <%= link_to "Edit this channel", edit_channel_path(@channel), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-  <%= link_to "Back to channels", channels_path, class: "w-full sm:w-auto text-center mt-2 sm:mt-0 sm:ml-2 rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-  <%= button_to "Destroy this channel", @channel, method: :delete, form_class: "sm:inline-block mt-2 sm:mt-0 sm:ml-2", class: "w-full rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer", data: { turbo_confirm: "Are you sure?" } %>
+<%# field reset after sending a message %>
+  <script>
+    document.addEventListener('turbo:submit-end', function(e) {
+      if (e.detail.success) e.target.reset();
+    });
+  </script>
 </div>
-
-<div class="bg-gray-800 shadow rounded-lg px-5 py-3 my-4 mt-8">
-  <div class="space-y-4 max-h-96 my-4 overflow-y-auto">
-  <div id="messages">
-    <%= turbo_stream_from @channel, "messages" %>
-      <%= render @channel.messages %>
-    </div>
-  </div>
-</div>
-
-<%= form_with model: [@channel, Message.new], class: "mt-4", data: { controller: "reset-form", action: "turbo:submit-end->reset-form#reset" } do |f| %>
-  <div class="flex gap-4">
-    <%= f.text_area :content,
-        class: "flex-1 min-h-[80px] rounded-lg border-gray-600 bg-gray-700 text-gray-100 shadow-sm focus:border-indigo-400 focus:ring-indigo-400",
-        placeholder: "Type your message..."
-      %>
-
-    <%= f.submit "Send",
-      class: "rounded-lg py-3 px-5 bg-blue-700 text-white inline-block font-medium cursor-pointer hover:bg-blue-600"
-    %>
-  </div>
-<% end %>

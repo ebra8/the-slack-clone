@@ -2,10 +2,11 @@ class MessagesController < ApplicationController
     before_action :set_channel
 
     def create
-        @message = @channel.messages.new(message_params)
+        @message = @channel.messages.create(message_params)
         @message.user = current_user
         @message.save
 
+        render json: {}, status: :no_content
     end
 
     private
