@@ -10,7 +10,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_02_072513) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_03_111702) do
+  create_table "channel_users", force: :cascade do |t|
+    t.integer "channel_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["channel_id"], name: "index_channel_users_on_channel_id"
+    t.index ["user_id"], name: "index_channel_users_on_user_id"
+  end
+
   create_table "channels", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name"
@@ -39,6 +48,8 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_02_072513) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "channel_users", "channels"
+  add_foreign_key "channel_users", "users"
   add_foreign_key "messages", "channels"
   add_foreign_key "messages", "users"
 end

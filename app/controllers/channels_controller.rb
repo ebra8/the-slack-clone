@@ -1,5 +1,6 @@
 class ChannelsController < ApplicationController
-  before_action :set_channel, only: %i[ show edit update destroy ]
+  before_action :authenticate_user!
+  before_action :set_channel, only: %i[ show edit update destroy join leave ]
 
   # GET /channels or /channels.json
   def index
@@ -8,6 +9,7 @@ class ChannelsController < ApplicationController
 
   # GET /channels/1 or /channels/1.json
   def show
+    @members = @channel.users
   end
 
   # GET /channels/new
@@ -53,6 +55,25 @@ class ChannelsController < ApplicationController
 
     respond_to do |format|
       format.html { redirect_to channels_path, notice: "Channel was successfully destroyed.", status: :see_other }
+      format.json { head :no_content }
+    end
+  end
+
+  # POST /channels/:id/join
+  def join
+    @channel.channel_users.find_or_create_by(user: current_user)
+    respond_to do |format|
+      format.html { redirect_to @channel }
+      format.json { head :no_content }
+    end
+  end
+
+  # DELETE /channels/:id/leave
+  def leave
+    membership = @channel.channel_users.find_by(user: current_user)
+    membership&.destroy
+    respond_to do |format|
+      format.html { redirect_to channels_path }
       format.json { head :no_content }
     end
   end
