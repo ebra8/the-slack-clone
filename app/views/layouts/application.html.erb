@@ -38,6 +38,7 @@
             <% end %>
             <div class="hidden sm:-my-px sm:ml-6 sm:flex sm:space-x-8 py-2 px-3 items-center">
               <% if current_user %>
+                <%= link_to "( #{current_user.email.split('@').first} )", "#", class: "text-gray-300 hover:text-white rounded-md text-sm font-medium" %>
                 <%= button_to "Logout", destroy_user_session_path, method: :delete, class: "mt-2 rounded-lg py-3 px-5 bg-gray-700 text-gray-100 font-medium hover:bg-gray-600 cursor-pointer" %>
               <% else %>
                 <%= button_to "Login", new_user_session_path, class: "mt-2 rounded-lg py-3 px-5 bg-gray-700 text-gray-100 font-medium hover:bg-gray-600 cursor-pointer" %>
