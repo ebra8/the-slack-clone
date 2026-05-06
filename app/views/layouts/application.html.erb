@@ -23,38 +23,129 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="mx-auto bg-gray-800 min-h-screen">
-    <div class="min-h-full">
-      <nav class="bg-gray-800 shadow-sm">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div class="flex h-16 justify-between items-center">
-            <div class="flex">
-              <div class="flex-shrink-0 flex items-center py-2 px-3">
-                <%= link_to "Slack Clone", root_path, class: "text-white font-bold text-xl" %>
-              </div>
-            </div>
-            <% if notice.present? %>
-              <p class="py-2 px-3 bg-gray-650 mb-5 text-green-500 font-medium rounded-md inline-block" id="notice"><%= notice %></p>
-            <% end %>
-            <div class="hidden sm:-my-px sm:ml-6 sm:flex sm:space-x-8 py-2 px-3 items-center">
-              <% if current_user %>
-                <%= link_to "( #{current_user.email.split('@').first} )", "#", class: "text-gray-300 hover:text-white rounded-md text-sm font-medium" %>
-                <%= button_to "Logout", destroy_user_session_path, method: :delete, class: "mt-2 rounded-lg py-3 px-5 bg-gray-700 text-gray-100 font-medium hover:bg-gray-600 cursor-pointer" %>
-              <% else %>
-                <%= button_to "Login", new_user_session_path, class: "mt-2 rounded-lg py-3 px-5 bg-gray-700 text-gray-100 font-medium hover:bg-gray-600 cursor-pointer" %>
+  <body class="h-screen overflow-hidden bg-[#1A1D21] text-gray-300 font-sans">
+    <div class="flex h-screen">
+      <% if current_user %>
+        <%# === SLACK SIDEBAR === %>
+        <aside class="w-64 flex-shrink-0 bg-[#3F0E40] flex flex-col">
+          <%# Workspace header %>
+          <div class="h-14 flex items-center px-4 border-b border-[#522653] shadow-sm hover:bg-[#350D36] cursor-pointer transition-colors">
+            <h1 class="text-white font-bold text-lg tracking-tight truncate">Slack Clone</h1>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-auto text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+
+          <%# Channels list %>
+          <div class="flex-1 overflow-y-auto py-3">
+            <div class="flex items-center justify-between px-4 mb-1 group">
+              <span class="text-[#CDB4CE] text-sm font-semibold tracking-wide hover:text-gray-100 cursor-pointer flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1 transform rotate-0 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                Channels
+              </span>
+              <%= link_to new_channel_path, class: "text-[#CDB4CE] opacity-0 group-hover:opacity-100 hover:text-white transition-opacity" do %>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                </svg>
               <% end %>
             </div>
+
+            <nav class="space-y-0.5 mt-1">
+              <% Channel.all.each do |channel| %>
+                <% is_active = defined?(@channel) && @channel&.id == channel.id %>
+                <% is_member = channel.users.include?(current_user) %>
+                <% if is_member %>
+                  <%= link_to channel_path(channel), class: "flex items-center px-4 py-1 text-sm #{is_active ? 'bg-[#1164A3] text-white' : 'text-[#CDB4CE] hover:bg-[#350D36]'} transition-colors group" do %>
+                    <span class="mr-2 text-base opacity-70 group-hover:opacity-100">#</span>
+                    <span class="truncate flex-1 <%= 'font-bold text-white' if !is_active && channel.id == Channel.first&.id %>"><%= channel.name %></span>
+                    <% if !is_active && channel.id == Channel.first&.id %>
+                      <span class="ml-auto bg-[#E01E5A] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-sm">3</span>
+                    <% end %>
+                  <% end %>
+                <% else %>
+                  <div class="group flex items-center justify-between px-4 py-1 text-sm text-[#8D6E8F] hover:bg-[#350D36] transition-colors cursor-default">
+                    <div class="flex items-center overflow-hidden">
+                      <span class="mr-2 text-base opacity-50">#</span>
+                      <span class="truncate"><%= channel.name %></span>
+                    </div>
+                    <%= button_to "Join", join_channel_path(channel), method: :post, class: "opacity-0 group-hover:opacity-100 text-[10px] text-white bg-green-700 hover:bg-green-600 px-1.5 py-0.5 rounded transition-all cursor-pointer flex-shrink-0 ml-2" %>
+                  </div>
+                <% end %>
+              <% end %>
+            </nav>
+
+            <%# Direct Messages (UI Mockup) %>
+            <div class="mt-6">
+              <div class="flex items-center justify-between px-4 mb-1 group">
+                <span class="text-[#CDB4CE] text-sm font-semibold tracking-wide hover:text-gray-100 cursor-pointer flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1 transform rotate-0 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                  Direct messages
+                </span>
+                <a href="#" class="text-[#CDB4CE] opacity-0 group-hover:opacity-100 hover:text-white transition-opacity">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                  </svg>
+                </a>
+              </div>
+
+              <nav class="space-y-0.5 mt-1">
+                <a href="#" class="flex items-center px-4 py-1 text-sm text-white bg-[#350D36] transition-colors">
+                  <div class="relative mr-2">
+                    <div class="w-5 h-5 rounded bg-[#E01E5A] flex items-center justify-center text-white text-[10px] font-bold">
+                      S
+                    </div>
+                    <div class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-[#2BAC76] border-2 border-[#3F0E40] rounded-full"></div>
+                  </div>
+                  <span class="truncate flex-1 font-bold">Sarah Smith</span>
+                  <span class="ml-auto bg-[#E01E5A] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-sm">1</span>
+                </a>
+                <a href="#" class="flex items-center px-4 py-1 text-sm text-[#CDB4CE] hover:bg-[#350D36] transition-colors">
+                  <div class="relative mr-2">
+                    <div class="w-5 h-5 rounded bg-[#36C5F0] flex items-center justify-center text-white text-[10px] font-bold">
+                      M
+                    </div>
+                    <div class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-transparent border-2 border-gray-400 rounded-full"></div>
+                  </div>
+                  <span class="truncate">Mike Johnson</span>
+                </a>
+              </nav>
+            </div>
           </div>
-        </div>
-      </nav>
 
-    </div>
+          <%# User footer %>
+          <div class="p-4 border-t border-[#522653] bg-[#350D36] flex items-center justify-between">
+            <div class="flex items-center overflow-hidden">
+              <div class="w-8 h-8 rounded bg-[#1164A3] flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
+                <%= current_user.email[0].upcase %>
+              </div>
+              <div class="ml-2 truncate">
+                <p class="text-gray-100 text-sm font-semibold truncate"><%= current_user.email.split('@').first %></p>
+                <div class="flex items-center">
+                  <span class="w-2 h-2 bg-[#2BAC76] rounded-full mr-1 flex-shrink-0"></span>
+                  <span class="text-[#CDB4CE] text-xs">Active</span>
+                </div>
+              </div>
+            </div>
+            <%= button_to destroy_user_session_path, method: :delete, class: "text-[#CDB4CE] hover:text-gray-100 p-1 flex-shrink-0" do %>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+            <% end %>
+          </div>
+        </aside>
+      <% end %>
 
-
-    <main>
-      <div class="">
+      <%# === MAIN CONTENT === %>
+      <main class="flex-1 flex flex-col min-w-0 min-h-0 bg-[#1A1D21]">
+        <% if notice.present? %>
+          <div class="bg-blue-600/20 border border-blue-500 text-blue-200 px-4 py-2 text-sm text-center font-medium" id="notice"><%= notice %></div>
+        <% end %>
+        <% if alert.present? %>
+          <div class="bg-red-900/50 border border-red-500 text-red-200 px-4 py-2 text-sm text-center font-medium" id="alert"><%= alert %></div>
+        <% end %>
+        
         <%= yield %>
-      </div>
-    </main>
+      </main>
+    </div>
   </body>
 </html>

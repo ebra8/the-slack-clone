@@ -1,11 +1,28 @@
-<% content_for :title, "Editing channel" %>
+<% content_for :title, "Edit channel" %>
 
-<div class="md:w-300 w-300 mx-auto mt-4 mb-2 p-4 bg-gray-800 rounded-lg shadow text-gray-100">
-  <%= link_to "<", @channel, class: "text-center sm:mt-0 sm:ml-2 rounded-md px-3.5 py-3.5 bg-gray-800 hover:underline inline-block font-medium text-gray-100" %>
+<div class="flex-1 flex flex-col items-center justify-center min-h-full bg-[#1A1D21] py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-xl w-full bg-[#222529] rounded-xl shadow-2xl border border-gray-700/50 overflow-hidden">
+    
+    <%# Modal Header %>
+    <div class="px-8 py-6 border-b border-gray-700 flex justify-between items-center">
+      <h1 class="text-2xl font-bold text-white tracking-tight">Edit channel</h1>
+      <%= link_to @channel, class: "text-gray-400 hover:text-white transition-colors" do %>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      <% end %>
+    </div>
 
-
-  <h1 class="font-bold text-4xl text-gray-100 inline-block">Edit channel</h1>
-
-  <%= render "form", channel: @channel %>
-  <%= button_to "Delete", @channel, method: :delete, class: "w-full sm:w-auto text-center rounded-md px-1.5 py-1.5 text-white bg-red-900 hover:bg-red-700 inline-block font-medium cursor-pointer mr-3", data: { turbo_confirm: "Are you sure?" } %>
+    <%# Modal Body %>
+    <div class="p-8">
+      <%= render "form", channel: @channel %>
+      
+      <div class="mt-8 pt-6 border-t border-gray-700">
+        <h3 class="text-sm font-semibold text-gray-300 mb-2">Danger Zone</h3>
+        <p class="text-xs text-gray-400 mb-4">Deleting this channel will permanently remove all messages and data within it. This action cannot be undone.</p>
+        <%= button_to "Delete Channel", @channel, method: :delete, class: "px-4 py-2 bg-transparent border border-red-500 text-red-500 hover:bg-red-500 hover:text-white text-sm font-bold rounded-md shadow-sm cursor-pointer transition-colors w-full sm:w-auto", data: { turbo_confirm: "Are you absolutely sure you want to delete ##{@channel.name}?" } %>
+      </div>
+    </div>
+    
+  </div>
 </div>

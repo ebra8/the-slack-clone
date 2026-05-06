@@ -1,9 +1,8 @@
-<%= form_with(model: channel, class: "contents") do |form| %>
+<%= form_with(model: channel, class: "space-y-6") do |form| %>
   <% if channel.errors.any? %>
-    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
-      <h2><%= pluralize(channel.errors.count, "error") %> prohibited this channel from being saved:</h2>
-
-      <ul class="list-disc ml-6">
+    <div id="error_explanation" class="bg-red-900/50 border border-red-500 text-red-200 px-4 py-3 rounded-lg mt-3">
+      <h2 class="font-bold text-sm mb-1"><%= pluralize(channel.errors.count, "error") %> prohibited this channel from being saved:</h2>
+      <ul class="list-disc ml-5 text-sm">
         <% channel.errors.each do |error| %>
           <li><%= error.full_message %></li>
         <% end %>
@@ -11,12 +10,22 @@
     </div>
   <% end %>
 
-  <div class="my-5">
-    <%= form.label :name %>
-    <%= form.text_field :name, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": channel.errors[:name].none?, "border-red-400 focus:outline-red-600": channel.errors[:name].any?}] %>
+  <div>
+    <%= form.label :name, class: "block text-sm font-semibold text-gray-300 mb-2" %>
+    <div class="relative">
+      <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+        <span class="text-gray-500 sm:text-lg">#</span>
+      </div>
+      <%= form.text_field :name, 
+          class: "appearance-none block w-full pl-8 pr-4 py-3 bg-[#1A1D21] border #{channel.errors[:name].any? ? 'border-red-500' : 'border-gray-600'} text-white rounded-md focus:outline-none focus:ring-2 focus:ring-[#1164A3] focus:border-transparent transition-colors placeholder-gray-500",
+          placeholder: "e.g. plan-budget" 
+      %>
+    </div>
+    <p class="mt-2 text-xs text-gray-400">Channels are where your team communicates. They're best when organized around a topic &mdash; #marketing, for example.</p>
   </div>
 
-  <div class="inline">
-    <%= form.submit class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
+  <div class="pt-4 flex items-center justify-end border-t border-gray-700">
+    <%= link_to "Cancel", channels_path, class: "mr-3 px-4 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors" if channel.persisted? || request.path != new_channel_path %>
+    <%= form.submit "Save Channel", class: "px-5 py-2.5 bg-[#007A5A] hover:bg-[#006B4F] text-white text-sm font-bold rounded-md shadow-sm cursor-pointer transition-colors" %>
   </div>
 <% end %>
