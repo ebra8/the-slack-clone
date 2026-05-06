@@ -1,6 +1,8 @@
 class ChannelsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_channel, only: %i[ show edit update destroy join leave ]
+  before_action :require_membership, only: %i[ show ]
+  before_action :require_owner, only: %i[ edit update destroy ]
 
   # GET /channels or /channels.json
   def index
@@ -24,6 +26,7 @@ class ChannelsController < ApplicationController
   # POST /channels or /channels.json
   def create
     @channel = Channel.new(channel_params)
+    @channel.user = current_user
 
     respond_to do |format|
       if @channel.save
@@ -83,6 +86,18 @@ class ChannelsController < ApplicationController
     # Use callbacks to share common setup or constraints between actions.
     def set_channel
       @channel = Channel.find(params.expect(:id))
+    end
+
+    def require_membership
+      unless @channel.users.include?(current_user)
+        redirect_to channels_path, alert: "You must join this channel to view its contents."
+      end
+    end
+
+    def require_owner
+      unless @channel.user == current_user
+        redirect_to channels_path, alert: "You are not authorized to edit or delete this channel."
+      end
     end
 
     # Only allow a list of trusted parameters through.

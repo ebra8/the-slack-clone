@@ -39,10 +39,7 @@
           <%# Channels list %>
           <div class="flex-1 overflow-y-auto py-3">
             <div class="flex items-center justify-between px-4 mb-1 group">
-              <span class="text-[#CDB4CE] text-sm font-semibold tracking-wide hover:text-gray-100 cursor-pointer flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1 transform rotate-0 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
-                Channels
-              </span>
+              <span class="text-[#CDB4CE] text-sm font-semibold tracking-wide hover:text-gray-100 cursor-pointer">Channels</span>
               <%= link_to new_channel_path, class: "text-[#CDB4CE] opacity-0 group-hover:opacity-100 hover:text-white transition-opacity" do %>
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
@@ -55,12 +52,9 @@
                 <% is_active = defined?(@channel) && @channel&.id == channel.id %>
                 <% is_member = channel.users.include?(current_user) %>
                 <% if is_member %>
-                  <%= link_to channel_path(channel), class: "flex items-center px-4 py-1 text-sm #{is_active ? 'bg-[#1164A3] text-white' : 'text-[#CDB4CE] hover:bg-[#350D36]'} transition-colors group" do %>
-                    <span class="mr-2 text-base opacity-70 group-hover:opacity-100">#</span>
-                    <span class="truncate flex-1 <%= 'font-bold text-white' if !is_active && channel.id == Channel.first&.id %>"><%= channel.name %></span>
-                    <% if !is_active && channel.id == Channel.first&.id %>
-                      <span class="ml-auto bg-[#E01E5A] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-sm">3</span>
-                    <% end %>
+                  <%= link_to channel_path(channel), class: "flex items-center px-4 py-1 text-sm #{is_active ? 'bg-[#1164A3] text-white' : 'text-[#CDB4CE] hover:bg-[#350D36]'} transition-colors" do %>
+                    <span class="mr-2 text-base opacity-70">#</span>
+                    <span class="truncate"><%= channel.name %></span>
                   <% end %>
                 <% else %>
                   <div class="group flex items-center justify-between px-4 py-1 text-sm text-[#8D6E8F] hover:bg-[#350D36] transition-colors cursor-default">
@@ -73,43 +67,6 @@
                 <% end %>
               <% end %>
             </nav>
-
-            <%# Direct Messages (UI Mockup) %>
-            <div class="mt-6">
-              <div class="flex items-center justify-between px-4 mb-1 group">
-                <span class="text-[#CDB4CE] text-sm font-semibold tracking-wide hover:text-gray-100 cursor-pointer flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1 transform rotate-0 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
-                  Direct messages
-                </span>
-                <a href="#" class="text-[#CDB4CE] opacity-0 group-hover:opacity-100 hover:text-white transition-opacity">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-                  </svg>
-                </a>
-              </div>
-
-              <nav class="space-y-0.5 mt-1">
-                <a href="#" class="flex items-center px-4 py-1 text-sm text-white bg-[#350D36] transition-colors">
-                  <div class="relative mr-2">
-                    <div class="w-5 h-5 rounded bg-[#E01E5A] flex items-center justify-center text-white text-[10px] font-bold">
-                      S
-                    </div>
-                    <div class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-[#2BAC76] border-2 border-[#3F0E40] rounded-full"></div>
-                  </div>
-                  <span class="truncate flex-1 font-bold">Sarah Smith</span>
-                  <span class="ml-auto bg-[#E01E5A] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-sm">1</span>
-                </a>
-                <a href="#" class="flex items-center px-4 py-1 text-sm text-[#CDB4CE] hover:bg-[#350D36] transition-colors">
-                  <div class="relative mr-2">
-                    <div class="w-5 h-5 rounded bg-[#36C5F0] flex items-center justify-center text-white text-[10px] font-bold">
-                      M
-                    </div>
-                    <div class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-transparent border-2 border-gray-400 rounded-full"></div>
-                  </div>
-                  <span class="truncate">Mike Johnson</span>
-                </a>
-              </nav>
-            </div>
           </div>
 
           <%# User footer %>
