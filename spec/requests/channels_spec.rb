@@ -32,6 +32,7 @@ RSpec.describe "Channels", type: :request do
     context "when authenticated" do
       before do
         login_as(user)
+        create(:channel_user, user: user, channel: channel)
         get channel_path(channel)
       end
 

@@ -11,6 +11,10 @@
 
     <%= yield :head %>
 
+    <%# Enable Turbo 8 morphing for seamless full-page updates %>
+    <%= turbo_refreshes_with method: :morph, scroll: :preserve %>
+    <%= turbo_stream_from "workspace" %>
+
     <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
     <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
 
@@ -29,12 +33,12 @@
         <%# === SLACK SIDEBAR === %>
         <aside class="w-64 flex-shrink-0 bg-[#3F0E40] flex flex-col">
           <%# Workspace header %>
-          <div class="h-14 flex items-center px-4 border-b border-[#522653] shadow-sm hover:bg-[#350D36] cursor-pointer transition-colors">
+          <%= link_to channels_path, class: "h-14 flex items-center px-4 border-b border-[#522653] shadow-sm hover:bg-[#350D36] cursor-pointer transition-colors block" do %>
             <h1 class="text-white font-bold text-lg tracking-tight truncate">Slack Clone</h1>
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-auto text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
             </svg>
-          </div>
+          <% end %>
 
           <%# Channels list %>
           <div class="flex-1 overflow-y-auto py-3">
@@ -48,7 +52,7 @@
             </div>
 
             <nav class="space-y-0.5 mt-1">
-              <% Channel.all.each do |channel| %>
+              <% Channel.includes(:users).all.each do |channel| %>
                 <% is_active = defined?(@channel) && @channel&.id == channel.id %>
                 <% is_member = channel.users.include?(current_user) %>
                 <% if is_member %>
